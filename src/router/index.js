@@ -25,6 +25,7 @@ export default router*/
 import { createRouter, createWebHistory } from 'vue-router';
 import RegisterView from '../views/RegisterView.vue';
 import LoginView from '@/views/LoginView.vue';
+import LeaderBoardView from '@/views/LeaderBoardView.vue';
 
 const routes = [
   {
@@ -41,8 +42,14 @@ const routes = [
     path: '/login',
     name: 'login',
     component: LoginView
-  }
+  },
   
+  {
+    path: '/leaderboard',
+    name: 'leaderboard',
+    component: LeaderBoardView
+  }
+
 ];
 
 const router = createRouter({
