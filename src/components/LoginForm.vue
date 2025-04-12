@@ -15,8 +15,6 @@ async function login() {
   errorMessage.value = "";
 
   try {
-    console.log("Envoi à l'API:", { email: email.value, password: "****" });
-
     const response = await fetch("http://localhost:3000/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -26,29 +24,18 @@ async function login() {
       }),
     });
 
-    console.log("Statut HTTP:", response.status);
-
     const data = await response.json();
-    console.log("Réponse API:", data);
 
-    if (!response.ok) {
-      throw new Error(data.message || "Email ou mot de passe incorrect");
-    }
-
-    if (!data.token) {
-      throw new Error("Token manquant dans la réponse");
-    }
+    if (!response.ok) throw new Error(data.message || "Email ou mot de passe incorrect");
 
     localStorage.setItem("authToken", data.token);
     localStorage.setItem("user", JSON.stringify(data));
-    router.push("/");
+    
+    
+    router.push("/leaderboard");
 
   } catch (err) {
-    console.error("Détails de l'erreur:", {
-      message: err.message,
-      stack: err.stack
-    });
-    errorMessage.value = "Échec de la connexion. Vérifiez vos identifiants.";
+    errorMessage.value = err.message || "Erreur lors de la connexion";
   } finally {
     isLoading.value = false;
   }
