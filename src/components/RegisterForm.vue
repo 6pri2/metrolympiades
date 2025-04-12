@@ -39,7 +39,7 @@
         this.successMessage = '';
         
         try {
-          const response = await fetch('http://localhost:3000/auth/register', {  // Endpoint corrigé
+          const response = await fetch('http://localhost:3000/auth/register', { 
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -55,11 +55,7 @@
 
           this.successMessage = 'Inscription réussie !';
           console.log('Réponse de l\'API:', data);
-          
-          // Stockage du token JWT dans le localStorage
           localStorage.setItem('authToken', data.token);
-          
-          // Redirection vers la page d'accueil ou autre
           this.$router.push('/');
           
         } catch (error) {
