@@ -81,9 +81,12 @@ onMounted(() => {
 
 <template>
   <div class="team-view">
-    <nav-bar></nav-bar>
     <div class="team-container">
+      <nav-bar></nav-bar>
       <input v-model="teamName" class="team-name" />
+      <div class="save-btn-wrapper">
+        <button @click="saveChanges">Enregistrer les modifications</button>
+      </div>
       <div v-if="isLoading" class="loading">Chargement...</div>
       <div v-else class="team-info">
         <h3>Membres de l'équipe :</h3>
@@ -96,13 +99,20 @@ onMounted(() => {
         </ul>
         <input v-model="newMember" placeholder="Ajouter un coéquipier" />
         <button @click="addMember">Ajouter</button>
-        <button @click="saveChanges">Enregistrer les modifications</button>
+        <!--<button @click="saveChanges">Enregistrer les modifications</button>-->
       </div>
     </div>
   </div>
 </template>
 
 <style scoped>
+
+.save-btn-wrapper {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 10px;
+}
+
 
 .remove-cross {
   margin-left: 10px;
