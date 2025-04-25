@@ -83,7 +83,7 @@ onMounted(() => {
   <div class="team-view">
     <nav-bar></nav-bar>
     <div class="team-container">
-      <h1>{{ teamName }}</h1>
+      <input v-model="teamName" class="team-name" />
       <div v-if="isLoading" class="loading">Chargement...</div>
       <div v-else class="team-info">
         <h3>Membres de l'équipe :</h3>
@@ -102,6 +102,17 @@ onMounted(() => {
 </template>
 
 <style scoped>
+.team-name {
+  font-size: 1.5rem;
+  text-align: center;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  padding: 10px;
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+
 .team-container {
   padding: 20px;
   max-width: 800px;
