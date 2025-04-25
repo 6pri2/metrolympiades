@@ -91,7 +91,7 @@ onMounted(() => {
           <li v-for="(member, index) in teamMembers" :key="index">
             <span v-if="index === 0">{{ member }} (Capitaine)</span>
             <input v-else v-model="teamMembers[index]" />
-            <button v-if="index !== 0" @click="removeMember(index)">Supprimer</button>
+            <span v-if="index !== 0" class="remove-cross" @click="removeMember(index)">×</span>
           </li>
         </ul>
         <input v-model="newMember" placeholder="Ajouter un coéquipier" />
@@ -103,6 +103,20 @@ onMounted(() => {
 </template>
 
 <style scoped>
+
+.remove-cross {
+  margin-left: 10px;
+  color: red;
+  font-weight: bold;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.remove-cross:hover {
+  transform: scale(1.3);
+}
+
+
 .team-name {
   font-size: 1.5rem;
   text-align: center;
