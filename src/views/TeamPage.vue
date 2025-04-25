@@ -73,6 +73,7 @@ const saveChanges = async () => {
   }
 };
 
+
 onMounted(() => {
   fetchTeamInfo();
 });
@@ -89,7 +90,7 @@ onMounted(() => {
         <ul>
           <li v-for="(member, index) in teamMembers" :key="index">
             <span>{{ member }}</span>
-            <button @click="removeMember(index)">Supprimer</button>
+            <button v-if="index !== 0" @click="removeMember(index)">Supprimer</button>
           </li>
         </ul>
         <input v-model="newMember" placeholder="Ajouter un coéquipier" />
