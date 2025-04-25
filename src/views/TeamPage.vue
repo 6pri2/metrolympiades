@@ -29,7 +29,7 @@ const fetchTeamInfo = async () => {
   }
 };
 
-
+// Ajouter un membre
 const addMember = () => {
   if (newMember.value.trim() !== '') {
     if (Array.isArray(teamMembers.value)) {
@@ -41,6 +41,37 @@ const addMember = () => {
   }
 };
 
+// Supprimer un membre
+const removeMember = (index) => {
+  // Retirer le membre de l'array localement
+  teamMembers.value.splice(index, 1);
+};
+
+// Appeler l'API pour enregistrer les modifications
+const saveChanges = async () => {
+  const token = localStorage.getItem('authToken');
+
+  try {
+    const response = await fetch('http://localhost:3000/teams/me', {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        name: teamName.value,
+        members: teamMembers.value
+      })
+    });
+
+    if (!response.ok) throw new Error('Erreur lors de la sauvegarde des modifications');
+
+    alert('Les modifications ont été enregistrées');
+  } catch (err) {
+    console.error('Erreur:', err);
+    alert('Erreur lors de l\'enregistrement des modifications');
+  }
+};
 
 onMounted(() => {
   fetchTeamInfo();
@@ -58,6 +89,7 @@ onMounted(() => {
         <ul>
           <li v-for="(member, index) in teamMembers" :key="index">
             <span>{{ member }}</span>
+            <button @click="removeMember(index)">Supprimer</button>
           </li>
         </ul>
         <input v-model="newMember" placeholder="Ajouter un coéquipier" />
