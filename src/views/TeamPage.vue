@@ -89,7 +89,8 @@ onMounted(() => {
         <h3>Membres de l'équipe :</h3>
         <ul>
           <li v-for="(member, index) in teamMembers" :key="index">
-            <span>{{ member }}</span>
+            <span v-if="index === 0">{{ member }} (Capitaine)</span>
+            <input v-else v-model="teamMembers[index]" />
             <button v-if="index !== 0" @click="removeMember(index)">Supprimer</button>
           </li>
         </ul>
@@ -142,6 +143,14 @@ input {
   border-radius: 25px;
   border: 1px solid #ccc;
 }
+
+ul input {
+  padding: 6px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  width: auto;
+}
+
 
 button {
   padding: 10px 20px;
