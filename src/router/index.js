@@ -38,13 +38,11 @@ const routes = [
     name: 'register',
     component: RegisterView
   },
-
   {
     path: '/login',
     name: 'login',
     component: LoginView
   },
-
   {
     path: '/leaderboard',
     name: 'leaderboard',
@@ -53,14 +51,30 @@ const routes = [
   {
     path: '/team',
     name: 'team',
-    component: TeamPage
+    component: TeamPage,
+    meta: {
+      requiresAuth: true
+    }
   }
-
 ];
 
 const router = createRouter({
   history: createWebHistory(),
-  routes
+  routes,
+});
+
+// Garde de navigation pour sécuriser certaines routes
+router.beforeEach((to, from, next) => {
+  if (to.matched.some(record => record.meta.requiresAuth)) {
+    const user = JSON.parse(localStorage.getItem('user'));
+    if (!user) {
+      next({ name: 'login' });
+    } else {
+      next();
+    }
+  } else {
+    next();
+  }
 });
 
 export default router;
