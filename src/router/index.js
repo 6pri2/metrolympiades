@@ -26,11 +26,12 @@ import { createRouter, createWebHistory } from 'vue-router';
 import RegisterView from '../views/RegisterView.vue';
 import LoginView from '@/views/LoginView.vue';
 import LeaderBoardView from '@/views/LeaderBoardView.vue';
+import TeamPage from '@/views/TeamPage.vue';
 
 const routes = [
   {
     path: '/',
-    redirect: '/register' 
+    redirect: '/register'
   },
   {
     path: '/register',
@@ -43,11 +44,16 @@ const routes = [
     name: 'login',
     component: LoginView
   },
-  
+
   {
     path: '/leaderboard',
     name: 'leaderboard',
     component: LeaderBoardView
+  },
+  {
+    path: '/team',
+    name: 'team',
+    component: TeamPage
   }
 
 ];
