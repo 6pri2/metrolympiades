@@ -30,8 +30,8 @@ async function login() {
 
     localStorage.setItem("authToken", data.token);
     localStorage.setItem("user", JSON.stringify(data));
-    
-    
+
+
     router.push("/leaderboard");
 
   } catch (err) {
@@ -49,7 +49,7 @@ function continueAsGuest() {
 <template>
   <form @submit.prevent="login" class="login-form">
     <h1>Connexion</h1>
-    
+
     <input
       type="email"
       id="email"
@@ -59,7 +59,7 @@ function continueAsGuest() {
       v-model="email"
       placeholder="Email"
     />
-    
+
     <input
       type="password"
       id="password"
@@ -69,17 +69,17 @@ function continueAsGuest() {
       v-model="password"
       placeholder="Mot de passe"
     />
-    
-    <button 
-      type="submit" 
-      :disabled="!isFormValid || isLoading" 
+
+    <button
+      type="submit"
+      :disabled="!isFormValid || isLoading"
       :class="{ loading: isLoading }"
     >
       {{ isLoading ? 'Connexion en cours...' : 'Connexion' }}
     </button>
 
-    <button 
-      type="button" 
+    <button
+      type="button"
       @click="continueAsGuest"
       class="guest-button"
     >
@@ -87,7 +87,7 @@ function continueAsGuest() {
     </button>
 
     <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
-    
+
     <p class="register-link">
       Pas encore de compte ? <router-link to="/register">Je m'inscris</router-link>
     </p>

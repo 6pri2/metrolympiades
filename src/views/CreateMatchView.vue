@@ -1,5 +1,6 @@
 <script setup>
 import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 import NavBar from '@/components/NavBar.vue';
 
 
@@ -7,6 +8,7 @@ const teamName = ref('');
 const teamId = ref('');
 const isLoading = ref(true);
 const loading = ref(false);
+const router = useRouter();
 
 const selectedOpponent = ref('');
 const selectedActivity = ref('');
@@ -37,7 +39,7 @@ const fetchTeamInfo = async () => {
 };
 
 const saveMatch = async () => {
-  const token = localStorage.getItem('authToken');  
+  const token = localStorage.getItem('authToken');
 
   if (!selectedOpponent.value || !selectedActivity.value || !startTime.value) {
     alert('Veuillez remplir tous les champs du formulaire.');
@@ -51,11 +53,11 @@ const saveMatch = async () => {
   const formattedStartTime = currentDate.toISOString();
 
   const matchData = {
-    team2Id: selectedOpponent.value,   
-    activityId: selectedActivity.value, 
-    startedAt: formattedStartTime,     
-    team1Score: teamScore.value,       
-    team2Score: opponentScore.value,   
+    team2Id: selectedOpponent.value,
+    activityId: selectedActivity.value,
+    startedAt: formattedStartTime,
+    team1Score: teamScore.value,
+    team2Score: opponentScore.value,
   };
 
   try {
@@ -69,14 +71,18 @@ const saveMatch = async () => {
     });
 
     if (!response.ok) {
-      const errorData = await response.json(); 
+      const errorData = await response.json();
       throw new Error(errorData.message || 'Erreur lors de la création du match');
     }
 
-    const data = await response.json(); 
-    alert(data.message || 'Match créé avec succès !'); 
+    const data = await response.json();
+    alert(data.message || 'Match créé avec succès !');
 
-   
+    router
+
+    router.push('/games');
+
+
     selectedOpponent.value = '';
     selectedActivity.value = '';
     startTime.value = '';
@@ -128,9 +134,9 @@ onMounted(async()=>{
     <nav-bar></nav-bar>
     <div class="new-match">
       <h1>Nouveau match</h1>
-  
+
       <button class="save-button" @click="saveMatch">Enregistrer</button>
-  
+
       <div class="form-group">
             <label for="opponent">Adversaire</label>
             <select id="opponent" v-model="selectedOpponent">
@@ -138,7 +144,7 @@ onMounted(async()=>{
             <option v-for="team in apiOpponents" :key="team.id" :value="team.id">{{ team.name }}</option>
             </select>
       </div>
-  
+
       <div class="form-group">
         <label for="activity">Activité</label>
         <select id="activity" v-model="selectedActivity">
@@ -146,12 +152,12 @@ onMounted(async()=>{
           <option v-for="activity in apiActivities" :key="activity.id" :value="activity.id">{{ activity.name }}</option>
         </select>
       </div>
-  
+
       <div class="form-group">
         <label for="startTime">Heure de début</label>
         <input type="time" id="startTime" v-model="startTime" />
       </div>
-  
+
       <div class="scores">
         <h2>Scores finaux</h2>
         <div class="score">

@@ -41,7 +41,6 @@ const fetchTeamInfo = async () => {
   }
 };
 
-// Ajouter un membre
 const addMember = () => {
   if (newMember.value.trim() !== '') {
     if (Array.isArray(teamMembers.value)) {
@@ -53,13 +52,10 @@ const addMember = () => {
   }
 };
 
-// Supprimer un membre
 const removeMember = (index) => {
-  // Retirer le membre de l'array localement
   teamMembers.value.splice(index, 1);
 };
 
-// Appeler l'API pour enregistrer les modifications
 const saveChanges = async () => {
   const token = localStorage.getItem('authToken');
 
@@ -114,7 +110,6 @@ onMounted(() => {
         </ul>
         <input v-model="newMember" placeholder="Ajouter un coéquipier" />
         <button @click="addMember">Ajouter</button>
-        <!--<button @click="saveChanges">Enregistrer les modifications</button>-->
       </div>
     </div>
   </div>
