@@ -27,6 +27,9 @@ import RegisterView from '../views/RegisterView.vue';
 import LoginView from '@/views/LoginView.vue';
 import LeaderBoardView from '@/views/LeaderBoardView.vue';
 import TeamPage from '@/views/TeamPage.vue';
+import GameView from '@/views/GameView.vue';
+import CreateMatchView from '@/views/CreateMatchView.vue';
+
 
 const routes = [
   {
@@ -52,6 +55,22 @@ const routes = [
     path: '/team',
     name: 'team',
     component: TeamPage,
+    meta: {
+      requiresAuth: true
+    }
+  },
+  {
+    path: '/games',
+    name: 'games',
+    component: GameView,
+    meta: {
+      requiresAuth: true
+    }
+  },
+  {
+    path: '/game',
+    name: 'game',
+    component: CreateMatchView,
     meta: {
       requiresAuth: true
     }
