@@ -1,11 +1,20 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import NavBar from '@/components/NavBar.vue';
 
 const teamName = ref('');
 const teamMembers = ref([]);
 const newMember = ref('');
 const isLoading = ref(true);
+const originalTeamName = ref('');
+const originalTeamMembers = ref([]);
+
+const isModified = computed(() => {
+  return (
+    teamName.value !== originalTeamName.value ||
+    JSON.stringify(teamMembers.value) !== JSON.stringify(originalTeamMembers.value)
+  );
+});
 
 const fetchTeamInfo = async () => {
   const token = localStorage.getItem('authToken');
@@ -22,6 +31,9 @@ const fetchTeamInfo = async () => {
     const data = await response.json();
     teamName.value = data.name;
     teamMembers.value = Array.isArray(data.members) ? data.members : [];
+    originalTeamName.value = data.name;
+    originalTeamMembers.value = Array.isArray(data.members) ? [...data.members] : [];
+
   } catch (err) {
     console.error('Erreur:', err);
   } finally {
@@ -67,6 +79,9 @@ const saveChanges = async () => {
     if (!response.ok) throw new Error('Erreur lors de la sauvegarde des modifications');
 
     alert('Les modifications ont été enregistrées');
+
+    originalTeamName.value = teamName.value;
+    originalTeamMembers.value = [...teamMembers.value];
   } catch (err) {
     console.error('Erreur:', err);
     alert('Erreur lors de l\'enregistrement des modifications');
@@ -85,7 +100,7 @@ onMounted(() => {
       <nav-bar></nav-bar>
       <input v-model="teamName" class="team-name" />
       <div class="save-btn-wrapper">
-        <button @click="saveChanges">Enregistrer les modifications</button>
+        <button @click="saveChanges" :disabled="!isModified">Enregistrer les modifications</button>
       </div>
       <div v-if="isLoading" class="loading">Chargement...</div>
       <div v-else class="team-info">
@@ -106,6 +121,13 @@ onMounted(() => {
 </template>
 
 <style scoped>
+
+button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
 
 .save-btn-wrapper {
   display: flex;
