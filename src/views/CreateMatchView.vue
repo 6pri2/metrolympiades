@@ -161,7 +161,7 @@ onMounted(async()=>{
           </div>
         </div>
         <div class="score">
-          <span>{{ selectedOpponent ? apiOpponents.find(opponent => opponent.id === selectedOpponent.value)?.name : 'Adversaire inconnu' }}</span>
+          <span>{{ selectedOpponent ? apiOpponents.find(opponent => opponent.id === selectedOpponent)?.name : 'Adversaire inconnu' }}</span>
           <div class="score-control">
             <input type="number" min=0 v-model.number="opponentScore" />
           </div>
