@@ -1,104 +1,89 @@
 <template>
-  <div class="leaderboard-container">
-    <div class="header">
-      <h1>Metrolympiades</h1>
-      <h2>{{ teamName }}</h2>
-    </div>
+  <div class="team-view">
+    <div class="team-container">
+      <nav-bar v-if="isAuthenticated"></nav-bar>
+      <div v-else class="auth-buttons">
+        <router-link to="/login" class="auth-button">Se connecter</router-link>
+      </div>
 
-    <nav class="navigation">
-      <router-link to="/leaderboard" class="active">Classement générale</router-link>
-      <router-link to="/team">Mon équipe</router-link>
-      <router-link to="/games">Mes matchs</router-link>
-      <button @click="logout">Se déconnecter</button>
-    </nav>
+      <input v-model="teamName" class="team-name" disabled />
 
-    <div class="content">
-      <h2>Classement générale</h2>
-      
-      <div v-if="isLoading" class="loading">Chargement en cours...</div>
-      <div v-else-if="error" class="error">{{ error }}</div>
-      <div v-else class="teams-list">
-        <div v-for="(team, index) in rankings" :key="team.team" class="team-card">
-          <div class="rank" :class="getRankClass(index)">{{ index + 1 }}</div>
-          <div class="team-info">
-            <h3>{{ team.team }}</h3>
-            <p>{{ team.points }}pts</p>
-          </div>
-        </div>
+      <div v-if="isLoading" class="loading">Chargement du classement...</div>
+
+      <div v-else class="team-info">
+        <h3>Classement :</h3>
+        <ul>
+          <li v-for="(ranking, index) in rankings" :key="index">
+            <strong>{{ index + 1 }}. {{ ranking.team }}</strong> — {{ ranking.points }} points
+          </li>
+        </ul>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import NavBar from '@/components/Navbar.vue';
+import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
-const teamName = ref('');
 const rankings = ref([]);
 const isLoading = ref(true);
-const error = ref('');
+const teamName = ref('');
 
+const isAuthenticated = computed(() => {
+  return !!localStorage.getItem('authToken');
+});
 
-function getRankClass(index) {
-  return [
-    'first-place',
-    'second-place',
-    'third-place'
-  ][index] || '';
+function goBack() {
+  router.push('/');
 }
 
 async function fetchTeamInfo() {
-  const token = localStorage.getItem('authToken');
-  
+  if (!isAuthenticated.value) {
+    teamName.value = "Invité";
+    return;
+  }
+
   try {
-    const response = await fetch('http://localhost:3000/teams/me', {
+    const response = await fetch('http://localhost:3000/user-info', {
       headers: {
-        'Authorization': `Bearer ${token}`
+        'Authorization': `Bearer ${localStorage.getItem('authToken')}`
       }
     });
-    
-    if (!response.ok) throw new Error('Erreur lors de la récupération des données');
-    
-    const data = await response.json();
-    teamName.value = data.name;
-    
-  } catch (err) {
-    console.error('Erreur:', err);
-    router.push('/login');
+    if (response.ok) {
+      const data = await response.json();
+      teamName.value = data.team || "Mon équipe";
+    } else {
+      console.error('Erreur lors de la récupération des informations utilisateur');
+      teamName.value = "Mon équipe";
+    }
+  } catch (error) {
+    console.error('Erreur réseau', error);
+    teamName.value = "Mon équipe";
   }
 }
 
-
 async function fetchRankings() {
   isLoading.value = true;
-  error.value = '';
-  
   try {
     const response = await fetch('http://localhost:3000/ranking');
-    
     if (!response.ok) throw new Error('Erreur lors du chargement du classement');
-    
     rankings.value = await response.json();
-    
-  } catch (err) {
-    console.error('Erreur:', err);
-    error.value = 'Impossible de charger le classement';
+  } catch (error) {
+    console.error('Erreur de chargement:', error);
+    // Données de démo en cas d'erreur
     rankings.value = [
       { team: "Les Codeurs Fous", points: 15 },
       { team: "Bug Busters", points: 12 },
-      { team: "Commit & Conquer", points: 11 }
+      { team: "Commit & Conquer", points: 11 },
+      { team: "404 Team Not Found", points: 8 },
+      { team: "Les Script Kiddies", points: 5 }
     ];
   } finally {
     isLoading.value = false;
   }
-}
-
-function logout() {
-  localStorage.removeItem('authToken');
-  localStorage.removeItem('user');
-  router.push('/login');
 }
 
 onMounted(() => {
@@ -106,161 +91,136 @@ onMounted(() => {
   fetchRankings();
 });
 </script>
-  
+
 <style scoped>
-.leaderboard-container {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 30px;
-  font-family: 'Arial', sans-serif;
-  background: #f4f4f9;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.header {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 40px;
-}
-
-.header h1 {
-  color: #42b983;
-  font-size: 2.5rem;
-  font-weight: 600;
-  letter-spacing: 1px;
-  margin: 0;
-}
-
-.header h2 {
-  color: #555;
-  font-size: 1.4rem;
-  margin-top: 5px;
-}
-
-.navigation {
-  display: flex;
-  justify-content: center;
-  gap: 30px;
-  margin-bottom: 40px;
-  padding-bottom: 20px;
-  border-bottom: 2px solid #eeeeee;
-}
-
-.navigation a {
-  text-decoration: none;
-  color: #333;
-  font-weight: 500;
-  padding: 10px 20px;
-  border-radius: 30px;
-  transition: all 0.3s ease;
-}
-
-.navigation a:hover {
-  background: #42b983;
-  color: white;
-  transform: scale(1.05);
-}
-
-.active {
-  font-weight: bold;
-  color: #42b983;
-  border-bottom: 3px solid #42b983;
-}
-
-.content {
-  margin-top: 20px;
-}
-
-.content h2 {
-  text-align: center;
-  margin-bottom: 35px;
-  font-size: 2rem;
-  color: #333;
-  font-weight: 600;
-}
-
-.loading {
-  text-align: center;
-  color: #999;
-  font-size: 1.2rem;
-}
-
-.error {
-  text-align: center;
-  color: #f44336;
-  font-size: 1.2rem;
-}
-
-.teams-list {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.team-card {
-  display: flex;
-  align-items: center;
+.team-view {
   padding: 20px;
+  min-height: 100vh;
+  background-color: #f5f5f5;
+}
+
+.team-container {
+  padding: 20px;
+  max-width: 800px;
+  margin: 0 auto;
   background: white;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.team-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
+.auth-buttons {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 20px;
 }
 
-.rank {
-  font-size: 1.6rem;
-  font-weight: bold;
-  width: 50px;
+.auth-button {
+  padding: 8px 16px;
+  background-color: #42b983;
+  color: white;
+  border-radius: 4px;
+  text-decoration: none;
+  transition: background-color 0.3s;
+}
+
+.auth-button:hover {
+  background-color: #3aa876;
+}
+
+.team-name {
+  font-size: 1.5rem;
   text-align: center;
-  margin-right: 20px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 10px;
+  margin-bottom: 20px;
+  width: 100%;
+  background-color: #f9f9f9;
 }
 
-.first-place {
-  color: gold;
-}
-
-.second-place {
-  color: silver;
-}
-
-.third-place {
-  color: #cd7f32;
-}
-
-.team-info h3 {
-  margin: 0;
-  font-size: 1.2rem;
-  font-weight: 500;
-  color: #333;
-}
-
-.team-info p {
-  margin: 5px 0 0;
-  color: #777;
-  font-size: 0.95rem;
+.save-btn-wrapper {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 20px;
 }
 
 button {
   padding: 10px 20px;
-  background: #f44336;
+  background: #42b983;
   color: white;
   border: none;
   border-radius: 25px;
-  font-weight: 500;
   cursor: pointer;
-  transition: background 0.3s ease;
-  margin-top: 20px;
-  width: 100%;
+  transition: background-color 0.3s;
 }
 
 button:hover {
-  background: #d32f2f;
+  background: #388e3c;
+}
+
+.loading {
+  text-align: center;
+  padding: 20px;
+  font-style: italic;
+  color: #666;
+}
+
+.team-info {
+  margin-top: 20px;
+}
+
+.team-info h3 {
+  text-align: center;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+li {
+  padding: 12px 15px;
+  margin: 8px 0;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  border-left: 4px solid #42b983;
+  transition: transform 0.2s;
+}
+
+li:hover {
+  transform: translateX(5px);
+}
+
+.team-info ul li:nth-child(1) {
+  border-left-color: gold;
+  background-color: rgba(255, 215, 0, 0.1);
+}
+
+.team-info ul li:nth-child(2) {
+  border-left-color: silver;
+  background-color: rgba(192, 192, 192, 0.1);
+}
+
+.team-info ul li:nth-child(3) {
+  border-left-color: #cd7f32;
+  background-color: rgba(205, 127, 50, 0.1);
+}
+
+@media (max-width: 600px) {
+  .team-container {
+    padding: 15px;
+  }
+  
+  .team-name {
+    font-size: 1.2rem;
+  }
+  
+  li {
+    padding: 10px;
+    font-size: 0.9rem;
+  }
 }
 </style>

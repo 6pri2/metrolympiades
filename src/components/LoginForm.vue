@@ -40,6 +40,10 @@ async function login() {
     isLoading.value = false;
   }
 }
+
+function continueAsGuest() {
+  router.push("/leaderboard");
+}
 </script>
 
 <template>
@@ -72,6 +76,14 @@ async function login() {
       :class="{ loading: isLoading }"
     >
       {{ isLoading ? 'Connexion en cours...' : 'Connexion' }}
+    </button>
+
+    <button 
+      type="button" 
+      @click="continueAsGuest"
+      class="guest-button"
+    >
+      Continuer en invité
     </button>
 
     <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
@@ -161,5 +173,19 @@ async function login() {
   color: #42b983;
   text-decoration: none;
   font-weight: 500;
+}
+
+.guest-button {
+  padding: 10px;
+  background-color: #f0f0f0;
+  color: #333;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.guest-button:hover {
+  background-color: #e0e0e0;
 }
 </style>
