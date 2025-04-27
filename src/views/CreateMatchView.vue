@@ -95,7 +95,7 @@ function fetchOpponents() {
   const result = fetch("http://localhost:3000/teams");
   result.then((response) => response.json())
     .then((data) => {
-      apiOpponents.value = data.filter(team => team.name !== teamName);
+      apiOpponents.value = data.filter(team => team.name !== teamName.value);
       console.log("nom de la team = ". teamName);
       console.log("nom de la team advers = ". team.name)
       loading.value = false;
@@ -117,8 +117,9 @@ function fetchActivities() {
 
 fetchActivities();
 
-onMounted(() => {
-  fetchTeamInfo();
+onMounted(async()=>{
+  await fetchTeamInfo();
+  fetchOpponents();
 });
 
 </script>
@@ -156,13 +157,13 @@ onMounted(() => {
         <div class="score">
           <span>{{ teamName }}</span>
           <div class="score-control">
-            <input type="number" v-model.number="teamScore" />
+            <input type="number" min=0 v-model.number="teamScore" />
           </div>
         </div>
         <div class="score">
-          <span>{{ selectedOpponent ? apiOpponents.find(opponent => opponent.id === selectedOpponent)?.name : 'Adversaire inconnu' }}</span>
+          <span>{{ selectedOpponent ? apiOpponents.find(opponent => opponent.id === selectedOpponent.value)?.name : 'Adversaire inconnu' }}</span>
           <div class="score-control">
-            <input type="number" v-model.number="opponentScore" />
+            <input type="number" min=0 v-model.number="opponentScore" />
           </div>
         </div>
       </div>
