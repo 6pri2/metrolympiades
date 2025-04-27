@@ -39,6 +39,31 @@ const fetchMatches = async () => {
   }
 };
 
+// Fonction pour modifier un match (uniquement pour les matchs de l'utilisateur)
+const editMatch = async (matchId, updatedData) => {
+  try {
+    const response = await fetch(`http://localhost:3000/matches/${matchId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+      },
+      body: JSON.stringify(updatedData)
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Erreur lors de la modification du match');
+    }
+
+    // Recharger les matchs après modification
+    fetchMatches();
+  } catch (error) {
+    console.error('Erreur lors de la modification du match:', error);
+    alert('Impossible de modifier ce match.');
+  }
+};
+
 // Filtrer les matchs en fonction du statut
 const filteredMatches = computed(() => {
   if (filter.value === 'all') return matches.value;
@@ -60,6 +85,11 @@ onMounted(() => {
 <template>
   <div class="games-view">
     <nav-bar></nav-bar>
+
+    <!-- Bouton pour créer un match -->
+    <div class="create-match-container">
+      <router-link to="/create-match" class="create-match-button">Créer un match</router-link>
+    </div>
 
     <!-- Sélecteur pour basculer entre "Tous les matchs" et "Mes matchs" -->
     <div class="view-mode-container">
@@ -107,7 +137,15 @@ onMounted(() => {
               Score : {{ match.team1Score }} - {{ match.team2Score }}
             </p>
           </div>
-          <router-link :to="`/matches/${match.id}`" class="details-link">Voir détails</router-link>
+
+          <!-- Bouton pour modifier un match (uniquement pour les matchs de l'utilisateur) -->
+          <button
+            v-if="viewMode === 'my'"
+            @click="editMatch(match.id, { team1Score: 5, team2Score: 3 })"
+            class="edit-match-button"
+          >
+            Modifier
+          </button>
         </li>
       </ul>
     </div>
@@ -119,6 +157,24 @@ onMounted(() => {
   padding: 20px;
   max-width: 800px;
   margin: 0 auto;
+}
+
+.create-match-container {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.create-match-button {
+  padding: 10px 20px;
+  background-color: #42b983;
+  color: white;
+  border-radius: 5px;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.create-match-button:hover {
+  background-color: #3aa876;
 }
 
 .view-mode-container {
@@ -177,21 +233,17 @@ onMounted(() => {
   align-items: center;
 }
 
-.match-info p {
-  margin: 5px 0;
-}
-
-.details-link {
+.edit-match-button {
   padding: 8px 12px;
-  background-color: #42b983;
+  background-color: #ffa500;
   color: white;
-  border-radius: 4px;
-  text-decoration: none;
-  transition: background-color 0.3s;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
 }
 
-.details-link:hover {
-  background-color: #3aa876;
+.edit-match-button:hover {
+  background-color: #ff8c00;
 }
 
 .loading {
