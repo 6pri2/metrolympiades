@@ -57,3 +57,53 @@ const opponentScore = ref(0);
     </div>
   </template>
 
+<style scoped>
+.new-match {
+  padding: 20px;
+  max-width: 400px;
+  margin: auto;
+}
+.save-button {
+  float: right;
+  margin-bottom: 20px;
+}
+.form-group {
+  margin-bottom: 15px;
+}
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+}
+.form-group select,
+.form-group input {
+  width: 100%;
+  padding: 8px;
+  box-sizing: border-box;
+}
+.scores {
+  margin-top: 30px;
+}
+.score {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 15px;
+}
+.score-control {
+  display: flex;
+  align-items: center;
+}
+.score-control input {
+  width: 50px;
+  text-align: center;
+}
+.score-control button {
+  background: none;
+  border: 1px solid #ccc;
+  width: 24px;
+  height: 24px;
+  line-height: 20px;
+  text-align: center;
+  cursor: pointer;
+}
+</style>
